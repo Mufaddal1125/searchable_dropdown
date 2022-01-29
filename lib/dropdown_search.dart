@@ -274,6 +274,10 @@ class DropdownSearch<T> extends StatefulWidget {
   /// shown at the last of the list
   final Widget Function(BuildContext context, String search)? addItemWidgetBuilder;
 
+  /// automatically call onchanged on selection or deselection of item 
+  /// Note: this will hide the ok button which manually calls onChanged
+  final bool autoCallOnchangeOnUpdate;
+
   DropdownSearch({
     Key? key,
     this.onSaved,
@@ -345,6 +349,7 @@ class DropdownSearch<T> extends StatefulWidget {
         this.popupOnItemAdded = null,
         this.popupOnItemRemoved = null,
         this.popupSelectionWidget = null,
+        this.autoCallOnchangeOnUpdate = false,
         this.popupValidationMultiSelectionWidget = null,
         this.popupCustomMultiSelectionWidget = null,
         super(key: key);
@@ -357,6 +362,7 @@ class DropdownSearch<T> extends StatefulWidget {
     @Deprecated('Use hintText prop from dropdownSearchDecoration') this.hint,
     this.isFilteredOnline = false,
     this.popupTitle,
+    this.autoCallOnchangeOnUpdate = false,
     this.items,
     this.onFind,
     this.popupItemBuilder,
@@ -796,6 +802,7 @@ class DropdownSearchState<T> extends State<DropdownSearch<T>> {
     return SelectionWidget<T>(
       key: _popupStateKey,
       popupTitle: widget.popupTitle,
+      callOnChangeOnUpdate: widget.autoCallOnchangeOnUpdate,
       addItemWidgetBuilder: widget.addItemWidgetBuilder,
       maxHeight: widget.maxHeight ?? defaultHeight,
       isFilteredOnline: widget.isFilteredOnline,

@@ -86,7 +86,11 @@ class SelectionWidget<T> extends StatefulWidget {
   final FocusNode focusNode;
 
   /// shown at the last of the list
-  final Widget Function(BuildContext context, String search)? addItemWidgetBuilder;
+  final Widget Function(BuildContext context, String search)?
+      addItemWidgetBuilder;
+
+  /// should call the onChanged method if selection changes
+  final bool callOnChangeOnUpdate;
 
   const SelectionWidget({
     Key? key,
@@ -126,6 +130,7 @@ class SelectionWidget<T> extends StatefulWidget {
     this.selectionListViewProps = const SelectionListViewProps(),
     required this.focusNode,
     this.addItemWidgetBuilder,
+    this.callOnChangeOnUpdate = false,
   }) : super(key: key);
 
   @override
@@ -155,7 +160,9 @@ class SelectionWidgetState<T> extends State<SelectionWidget<T>> {
 
     Future.delayed(
       Duration.zero,
-      () => _manageItemsByFilter(widget.searchFieldProps?.controller?.text ?? '', isFistLoad: true),
+      () => _manageItemsByFilter(
+          widget.searchFieldProps?.controller?.text ?? '',
+          isFistLoad: true),
     );
   }
 
@@ -204,23 +211,23 @@ class SelectionWidgetState<T> extends State<SelectionWidget<T>> {
                           } else if (!snapshot.hasData) {
                             return _loadingWidget();
                           } else if (snapshot.data!.isEmpty) {
-                            if (widget.emptyBuilder != null){
-                        return widget.emptyBuilder!(
-                          context,
-                          widget.searchFieldProps?.controller?.text,
-                        );
-                      }
-                      if (widget.addItemWidgetBuilder != null) {
-                        return widget.addItemWidgetBuilder!(
-                          context,
-                          widget.searchFieldProps?.controller?.text ?? '',
-                        );
-                      } else {
-                        return const Center(
-                          child: const Text("No data found"),
-                        );
-                      }
-                    }
+                            if (widget.emptyBuilder != null) {
+                              return widget.emptyBuilder!(
+                                context,
+                                widget.searchFieldProps?.controller?.text,
+                              );
+                            }
+                            if (widget.addItemWidgetBuilder != null) {
+                              return widget.addItemWidgetBuilder!(
+                                context,
+                                widget.searchFieldProps?.controller?.text ?? '',
+                              );
+                            } else {
+                              return const Center(
+                                child: const Text("No data found"),
+                              );
+                            }
+                          }
                           return MediaQuery.removePadding(
                             removeBottom: true,
                             removeTop: true,
@@ -273,14 +280,17 @@ class SelectionWidgetState<T> extends State<SelectionWidget<T>> {
                                 clipBehavior:
                                     widget.selectionListViewProps.clipBehavior,
                                 itemCount: widget.addItemWidgetBuilder != null
-                              ? snapshot.data!.length + 1
-                              : snapshot.data!.length,
+                                    ? snapshot.data!.length + 1
+                                    : snapshot.data!.length,
                                 itemBuilder: (context, index) {
-                                  if (widget.addItemWidgetBuilder != null && index == snapshot.data!.length)
-                              return widget.addItemWidgetBuilder!(
-                                context,
-                                widget.searchFieldProps?.controller?.text ?? '',
-                              );
+                                  if (widget.addItemWidgetBuilder != null &&
+                                      index == snapshot.data!.length)
+                                    return widget.addItemWidgetBuilder!(
+                                      context,
+                                      widget.searchFieldProps?.controller
+                                              ?.text ??
+                                          '',
+                                    );
                                   var item = snapshot.data![index];
                                   return widget.isMultiSelectionMode
                                       ? _itemWidgetMultiSelection(item)
@@ -295,7 +305,7 @@ class SelectionWidgetState<T> extends State<SelectionWidget<T>> {
                     ],
                   ),
                 ),
-                _multiSelectionValidation(),
+                if (!widget.callOnChangeOnUpdate) _multiSelectionValidation(),
               ],
             );
           }),
@@ -428,10 +438,15 @@ class SelectionWidgetState<T> extends State<SelectionWidget<T>> {
       return _cachedItems.where((i) {
         if (widget.filterFn != null)
           return (widget.filterFn!(i, filter));
-        else if (i.toString().toLowerCase().contains(filter?.toLowerCase() ?? 'null'))
+        else if (i
+            .toString()
+            .toLowerCase()
+            .contains(filter?.toLowerCase() ?? 'null'))
           return true;
         else if (widget.itemAsString != null) {
-          return (widget.itemAsString!(i)).toLowerCase().contains(filter?.toLowerCase() ?? 'null');
+          return (widget.itemAsString!(i))
+              .toLowerCase()
+              .contains(filter?.toLowerCase() ?? 'null');
         }
         return false;
       }).toList();
@@ -534,7 +549,8 @@ class SelectionWidgetState<T> extends State<SelectionWidget<T>> {
       );
   }
 
-  bool _isDisabled(T item) => widget.itemDisabled != null && (widget.itemDisabled!(item)) == true;
+  bool _isDisabled(T item) =>
+      widget.itemDisabled != null && (widget.itemDisabled!(item)) == true;
 
   /// selected item will be highlighted only when [widget.showSelectedItems] is true,
   /// if our object is String [widget.compareFn] is not required , other wises it's required
@@ -687,7 +703,8 @@ class SelectionWidgetState<T> extends State<SelectionWidget<T>> {
             constraints: BoxConstraints(minWidth: constraints.maxWidth),
             child: Row(
                 mainAxisSize: MainAxisSize.max,
-                mainAxisAlignment: widget.favoriteItemsAlignment ?? MainAxisAlignment.start,
+                mainAxisAlignment:
+                    widget.favoriteItemsAlignment ?? MainAxisAlignment.start,
                 children: favoriteItems
                     .map(
                       (f) => InkWell(
@@ -719,10 +736,14 @@ class SelectionWidgetState<T> extends State<SelectionWidget<T>> {
         if (widget.popupOnItemRemoved != null)
           widget.popupOnItemRemoved!(_selectedItems, newSelectedItem);
       } else {
-        _selectedItemsNotifier.value = List.from(_selectedItems)..add(newSelectedItem);
+        _selectedItemsNotifier.value = List.from(_selectedItems)
+          ..add(newSelectedItem);
         if (widget.popupOnItemAdded != null)
           widget.popupOnItemAdded!(_selectedItems, newSelectedItem);
       }
+      // call on change if callOnChangeOnUpdate is true
+      if (widget.callOnChangeOnUpdate && widget.onChanged != null)
+        widget.onChanged!(_selectedItems);
     } else {
       closePopup();
       if (widget.onChanged != null)
@@ -734,7 +755,8 @@ class SelectionWidgetState<T> extends State<SelectionWidget<T>> {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 8, vertical: 6),
       decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10), color: Theme.of(context).primaryColorLight),
+          borderRadius: BorderRadius.circular(10),
+          color: Theme.of(context).primaryColorLight),
       child: Row(
         children: [
           Text(
@@ -806,6 +828,7 @@ class Debouncer {
 
   void call(Function action) {
     _timer?.cancel();
-    _timer = Timer(delay ?? const Duration(milliseconds: 500), action as void Function());
+    _timer = Timer(
+        delay ?? const Duration(milliseconds: 500), action as void Function());
   }
 }
