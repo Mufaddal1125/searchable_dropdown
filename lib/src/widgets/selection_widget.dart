@@ -39,7 +39,8 @@ class SelectionWidget<T> extends StatefulWidget {
     this.compareFn,
     this.addItemWidgetBuilder,
     this.emptyBuilder,
-    this.callOnChangeOnUpdate = false, this.hintText = '',
+    this.callOnChangeOnUpdate = false,
+    this.hintText = '',
   }) : super(key: key);
 
   @override
@@ -483,7 +484,8 @@ class SelectionWidgetState<T> extends State<SelectionWidget<T>> {
           return widget.popupProps.selectionWidget!(context, item, checked);
         },
         interceptCallBacks: widget.popupProps.interceptCallBacks,
-        layout: (context, isChecked) => _itemWidgetSingleSelection(item),
+        layout: (context, isChecked) =>
+            ExcludeFocusTraversal(child: _itemWidgetSingleSelection(item)),
         isChecked: _isSelectedItem(item),
         isDisabled: _isDisabled(item),
         onChanged: (c) => _handleSelectedItem(item),
@@ -491,7 +493,8 @@ class SelectionWidgetState<T> extends State<SelectionWidget<T>> {
     else
       return CheckBoxWidget(
         interceptCallBacks: widget.popupProps.interceptCallBacks,
-        layout: (context, isChecked) => _itemWidgetSingleSelection(item),
+        layout: (context, isChecked) =>
+            ExcludeFocusTraversal(child: _itemWidgetSingleSelection(item)),
         isChecked: _isSelectedItem(item),
         isDisabled: _isDisabled(item),
         onChanged: (c) => _handleSelectedItem(item),
