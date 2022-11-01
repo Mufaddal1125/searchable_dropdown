@@ -26,6 +26,8 @@ class SelectionWidget<T> extends StatefulWidget {
   final bool callOnChangeOnUpdate;
   final String hintText;
 
+  final List<T> Function(List<T> items, String query)? listFilterfn;
+
   const SelectionWidget({
     Key? key,
     required this.popupProps,
@@ -40,7 +42,7 @@ class SelectionWidget<T> extends StatefulWidget {
     this.addItemWidgetBuilder,
     this.emptyBuilder,
     this.callOnChangeOnUpdate = false,
-    this.hintText = '',
+    this.hintText = '', this.listFilterfn,
   }) : super(key: key);
 
   @override
@@ -376,7 +378,7 @@ class SelectionWidgetState<T> extends State<SelectionWidget<T>> {
     _loadingNotifier.value = true;
 
     List<T> applyFilter(String filter) {
-      return _cachedItems.where((i) {
+      return widget.listFilterfn?.call(_cachedItems, filter) ?? _cachedItems.where((i) {
         if (widget.filterFn != null)
           return (widget.filterFn!(i, filter));
         else if (i.toString().toLowerCase().contains(filter.toLowerCase()))

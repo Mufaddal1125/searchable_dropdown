@@ -173,6 +173,8 @@ class DropdownSearch<T> extends StatefulWidget {
   /// Note: this will hide the ok button which manually calls onChanged
   final bool autoCallOnchangeOnUpdate;
 
+  final List<T> Function(List<T> items, String query)? listFilterfn;
+
   DropdownSearch({
     Key? key,
     this.onSaved,
@@ -195,9 +197,13 @@ class DropdownSearch<T> extends StatefulWidget {
     PopupProps<T> popupProps = const PopupProps.menu(),
     this.searchFieldHintText = '',
     this.addItemWidgetBuilder,
-    this.autoCallOnchangeOnUpdate = false,
+    this.autoCallOnchangeOnUpdate = false, this.listFilterfn,
   })  : assert(
           !popupProps.showSelectedItems || T == String || compareFn != null,
+        ),
+        assert(
+          filterFn == null || listFilterfn == null,
+          'filterFn and listFilterfn cannot be used together',
         ),
         this.popupProps = PopupPropsMultiSelection.from(popupProps),
         this.isMultiSelectionMode = false,
@@ -233,8 +239,13 @@ class DropdownSearch<T> extends StatefulWidget {
     this.searchFieldHintText = '',
     this.addItemWidgetBuilder,
     this.autoCallOnchangeOnUpdate = false,
+    this.listFilterfn,
   })  : assert(
           !popupProps.showSelectedItems || T == String || compareFn != null,
+        ),
+        assert(
+          filterFn == null || listFilterfn == null,
+          'filterFn and listFilterfn cannot be used together',
         ),
         this.onChangedMultiSelection = onChanged,
         this.onBeforePopupOpeningMultiSelection = onBeforePopupOpening,
@@ -675,6 +686,7 @@ class DropdownSearchState<T> extends State<DropdownSearch<T>> {
       addItemWidgetBuilder: widget.addItemWidgetBuilder,
       itemAsString: widget.itemAsString,
       filterFn: widget.filterFn,
+      listFilterfn: widget.listFilterfn,
       items: widget.items,
       asyncItems: widget.asyncItems,
       hintText: widget.searchFieldHintText,
