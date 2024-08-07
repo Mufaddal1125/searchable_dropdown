@@ -711,7 +711,9 @@ class SelectionWidgetState<T> extends State<SelectionWidget<T>> {
       if (widget.callOnChangeOnUpdate && widget.onChanged != null)
         widget.onChanged!(_selectedItems);
     } else {
-      closePopup();
+      if (widget.popupProps.closeMenuOnSelect) {
+        closePopup();
+      }
       if (widget.onChanged != null)
         widget.onChanged!(List.filled(1, newSelectedItem));
     }

@@ -197,7 +197,8 @@ class DropdownSearch<T> extends StatefulWidget {
     PopupProps<T> popupProps = const PopupProps.menu(),
     this.searchFieldHintText = '',
     this.addItemWidgetBuilder,
-    this.autoCallOnchangeOnUpdate = false, this.listFilterfn,
+    this.autoCallOnchangeOnUpdate = false,
+    this.listFilterfn,
   })  : assert(
           !popupProps.showSelectedItems || T == String || compareFn != null,
         ),

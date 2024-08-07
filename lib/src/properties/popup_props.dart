@@ -77,6 +77,9 @@ class PopupProps<T> {
   ///if true , the callbacks (onTap, onLongClick...) will be handled by the user
   final bool interceptCallBacks;
 
+  /// close the popup on select
+  final bool closeMenuOnSelect;
+
   const PopupProps._({
     this.mode = Mode.MENU,
     this.fit = FlexFit.tight,
@@ -103,6 +106,7 @@ class PopupProps<T> {
     this.containerBuilder,
     this.constraints = const BoxConstraints(),
     this.interceptCallBacks = false,
+    this.closeMenuOnSelect = true,
   });
 
   const PopupProps.menu({
@@ -127,6 +131,7 @@ class PopupProps<T> {
     this.containerBuilder,
     this.constraints = const BoxConstraints(maxHeight: 350),
     this.interceptCallBacks = false,
+    this.closeMenuOnSelect = true,
   })  : this.mode = Mode.MENU,
         this.bottomSheetProps = const BottomSheetProps(),
         this.dialogProps = const DialogProps(),
@@ -158,6 +163,7 @@ class PopupProps<T> {
       maxHeight: 600,
     ),
     this.interceptCallBacks = false,
+    this.closeMenuOnSelect = true,
   })  : this.mode = Mode.DIALOG,
         this.menuProps = const MenuProps(),
         this.bottomSheetProps = const BottomSheetProps(),
@@ -185,6 +191,7 @@ class PopupProps<T> {
     this.containerBuilder,
     this.constraints = const BoxConstraints(maxHeight: 500),
     this.interceptCallBacks = false,
+    this.closeMenuOnSelect = true,
   })  : this.mode = Mode.BOTTOM_SHEET,
         this.menuProps = const MenuProps(),
         this.dialogProps = const DialogProps(),
@@ -212,6 +219,7 @@ class PopupProps<T> {
     this.containerBuilder,
     this.constraints = const BoxConstraints(maxHeight: 500),
     this.interceptCallBacks = false,
+    this.closeMenuOnSelect = true,
   })  : this.mode = Mode.MODAL_BOTTOM_SHEET,
         this.menuProps = const MenuProps(),
         this.dialogProps = const DialogProps(),
@@ -257,6 +265,7 @@ class PopupPropsMultiSelection<T> extends PopupProps<T> {
     super.containerBuilder,
     super.constraints = const BoxConstraints(maxHeight: 350),
     super.interceptCallBacks = false,
+    super.closeMenuOnSelect = true,
     this.onItemAdded,
     this.onItemRemoved,
     this.selectionWidget,
@@ -285,6 +294,7 @@ class PopupPropsMultiSelection<T> extends PopupProps<T> {
     super.containerBuilder,
     super.constraints = const BoxConstraints(maxHeight: 350),
     super.interceptCallBacks = false,
+    super.closeMenuOnSelect = true,
     this.onItemAdded,
     this.onItemRemoved,
     this.selectionWidget,
@@ -317,6 +327,7 @@ class PopupPropsMultiSelection<T> extends PopupProps<T> {
       maxHeight: 600,
     ),
     super.interceptCallBacks = false,
+    super.closeMenuOnSelect = true,
     this.onItemAdded,
     this.onItemRemoved,
     this.selectionWidget,
@@ -345,6 +356,7 @@ class PopupPropsMultiSelection<T> extends PopupProps<T> {
     super.containerBuilder,
     super.constraints = const BoxConstraints(maxHeight: 500),
     super.interceptCallBacks = false,
+    super.closeMenuOnSelect = true,
     this.onItemAdded,
     this.onItemRemoved,
     this.selectionWidget,
@@ -373,6 +385,7 @@ class PopupPropsMultiSelection<T> extends PopupProps<T> {
     super.containerBuilder,
     super.constraints = const BoxConstraints(maxHeight: 500),
     super.interceptCallBacks = false,
+    super.closeMenuOnSelect = true,
     this.onItemAdded,
     this.onItemRemoved,
     this.selectionWidget,
@@ -410,5 +423,6 @@ class PopupPropsMultiSelection<T> extends PopupProps<T> {
           onItemRemoved: null,
           selectionWidget: null,
           validationWidgetBuilder: null,
+          closeMenuOnSelect: popupProps.closeMenuOnSelect,
         );
 }
