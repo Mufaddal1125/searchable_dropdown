@@ -42,7 +42,8 @@ class SelectionWidget<T> extends StatefulWidget {
     this.addItemWidgetBuilder,
     this.emptyBuilder,
     this.callOnChangeOnUpdate = false,
-    this.hintText = '', this.listFilterfn,
+    this.hintText = '',
+    this.listFilterfn,
   }) : super(key: key);
 
   @override
@@ -64,12 +65,6 @@ class SelectionWidgetState<T> extends State<SelectionWidget<T>> {
     super.initState();
     _debouncer = Debouncer(delay: widget.popupProps.searchDelay);
     _selectedItemsNotifier.value = widget.defaultSelectedItems;
-
-    widget.popupProps.searchFieldProps.controller?.addListener(() {
-      _debouncer(() {
-        _onTextChanged(widget.popupProps.searchFieldProps.controller!.text);
-      });
-    });
 
     Future.delayed(
       Duration.zero,
@@ -378,18 +373,19 @@ class SelectionWidgetState<T> extends State<SelectionWidget<T>> {
     _loadingNotifier.value = true;
 
     List<T> applyFilter(String filter) {
-      return widget.listFilterfn?.call(_cachedItems, filter) ?? _cachedItems.where((i) {
-        if (widget.filterFn != null)
-          return (widget.filterFn!(i, filter));
-        else if (i.toString().toLowerCase().contains(filter.toLowerCase()))
-          return true;
-        else if (widget.itemAsString != null) {
-          return (widget.itemAsString!(i))
-              .toLowerCase()
-              .contains(filter.toLowerCase());
-        }
-        return false;
-      }).toList();
+      return widget.listFilterfn?.call(_cachedItems, filter) ??
+          _cachedItems.where((i) {
+            if (widget.filterFn != null)
+              return (widget.filterFn!(i, filter));
+            else if (i.toString().toLowerCase().contains(filter.toLowerCase()))
+              return true;
+            else if (widget.itemAsString != null) {
+              return (widget.itemAsString!(i))
+                  .toLowerCase()
+                  .contains(filter.toLowerCase());
+            }
+            return false;
+          }).toList();
     }
 
     //load offline data for the first time
@@ -544,12 +540,9 @@ class SelectionWidgetState<T> extends State<SelectionWidget<T>> {
                   },
                   child: TextField(
                     onChanged: (f) {
-                      //if controller !=null , the change event will be handled by
-                      // the controller
-                      if (widget.popupProps.searchFieldProps.controller == null)
-                        _debouncer(() {
-                          _onTextChanged(f);
-                        });
+                      _debouncer(() {
+                        _onTextChanged(f);
+                      });
                     },
                     enableIMEPersonalizedLearning: widget.popupProps
                         .searchFieldProps.enableIMEPersonalizedLearning,
