@@ -228,14 +228,21 @@ class SelectionWidgetState<T> extends State<SelectionWidget<T>> {
                                 ? snapshot.data!.length + 1
                                 : snapshot.data!.length,
                             itemBuilder: (context, index) {
-                              if (widget.addItemWidgetBuilder != null &&
-                                  index == snapshot.data!.length)
-                                return widget.addItemWidgetBuilder!(
-                                  context,
-                                  widget.popupProps.searchFieldProps.controller
-                                          ?.text ??
-                                      '',
-                                );
+                              if (widget.addItemWidgetBuilder != null) {
+                                if (widget.popupProps.showAddItemButtonOnTop
+                                    ? index == 0
+                                    : index == snapshot.data!.length) {
+                                  return widget.addItemWidgetBuilder!(
+                                    context,
+                                    widget.popupProps.searchFieldProps
+                                            .controller?.text ??
+                                        '',
+                                  );
+                                }
+                                if (widget.popupProps.showAddItemButtonOnTop) {
+                                  index--;
+                                }
+                              }
                               var item = snapshot.data![index];
                               return widget.isMultiSelectionMode
                                   ? _itemWidgetMultiSelection(item)
